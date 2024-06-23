@@ -1,0 +1,10 @@
+services:
+  cache.ocha_reliefweb:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: cache_factory:get
+    arguments: [ocha_reliefweb]
+  ocha_reliefweb.api.client:
+    class: Drupal\ocha_reliefweb\Services\ReliefWebApiClient
+    arguments: ['@cache.ocha_reliefweb', '@config.factory', '@datetime.time', '@http_client', '@logger.factory', '@request_stack']

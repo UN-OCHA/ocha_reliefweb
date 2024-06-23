@@ -1,0 +1,12 @@
+entity.reliefweb_resource_type.collection:
+  title: 'ReliefWeb Resource types'
+  route_name: entity.reliefweb_resource_type.collection
+  description: 'List of ReliefWeb Resource types.'
+  parent: system.admin_structure
+  weight: 110
+entity.reliefweb_resource.collection:
+  title: 'ReliefWeb Resources'
+  route_name: entity.reliefweb_resource_type.collection
+  description: 'List of ReliefWeb Resources.'
+  parent: system.admin_content
+  weight: 110

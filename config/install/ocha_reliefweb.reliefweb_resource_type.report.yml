@@ -1,0 +1,10 @@
+id: report
+label: 'Report'
+langcode: en
+status: true
+description: 'ReliefWeb report'
+dependencies:
+  enforced:
+    module:
+      - ocha_reliefweb
+third_party_settings: {  }

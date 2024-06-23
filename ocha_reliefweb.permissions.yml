@@ -1,0 +1,15 @@
+# @todo remove this permission.
+post reliefweb report:
+  title: 'Post ReliefWeb report'
+  description: 'Post ReliefWeb report.'
+
+administer reliefweb resources:
+  title: Sdminister ReliefWeb Resources
+  description: Administer ReliefWeb Resources.
+
+administer ReliefWeb Resource types:
+  title: Sdminister ReliefWeb Resource types
+  description: Administer ReliefWeb Resource types.
+
+permission_callbacks:
+  - Drupal\ocha_reliefweb\ReliefWebResourcePermissions::reliefwebResourceTypePermissions

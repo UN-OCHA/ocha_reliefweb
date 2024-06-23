@@ -1,0 +1,9 @@
+ocha_reliefweb.post.report:
+  path: '/content/reliefweb/post/report'
+  defaults:
+    _title: 'Post report'
+    _form: '\Drupal\ocha_reliefweb\Form\ReportForm'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'post reliefweb report'

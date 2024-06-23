@@ -1,0 +1,2 @@
+ocha_reliefweb.reliefweb_resource.actions:
+  deriver: 'Drupal\ocha_reliefweb\Plugin\Derivative\ReliefWebResourceDynamicLocalActions'

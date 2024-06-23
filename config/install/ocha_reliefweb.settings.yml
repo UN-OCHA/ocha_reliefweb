@@ -1,0 +1,24 @@
+# ReliefWeb API URL.
+reliefweb_api_url: https://api.reliefweb.int/v1
+# App name parameter to indentify the API requests.
+reliefweb_api_appname: unocha.org
+# Cache the query results.
+reliefweb_api_cache_enabled: true
+# How long to cache the query results.
+reliefweb_api_cache_lifetime: 300
+# Namespace for the cache Ids and tags.
+reliefweb_api_cache_namespace: reliefweb:api
+# Verify the SSL certificate of the API query performing requests.
+reliefweb_api_verify_ssl: true
+# ReliefWeb site URL.
+reliefweb_website: https://reliefweb.int
+# Max age when for a ReliefWeb document page not found response.
+reliefweb_document_not_found_max_age: 600
+# URL of the ReliefWeb API converter.
+reliefweb_api_converter: https://reliefweb.int/search/converter/json
+# Also use the "redirects" field for URL lookups.
+reliefweb_api_use_redirects: true
+# Base url for the POST API JSON schemas.
+reliefweb_api_post_api_schema_url: https://reliefweb.int/post-api-schemas/v2/
+# Base url for the POST API submissions.
+reliefweb_api_submission_base_url:

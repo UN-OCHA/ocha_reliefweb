@@ -1,0 +1,8 @@
+reliefweb_resource.tasks:
+  deriver: 'Drupal\ocha_reliefweb\Plugin\Derivative\ReliefWebResourceDynamicLocalTasks'
+
+entity.reliefweb_resource.collection:
+  title: ReliefWeb Resources
+  route_name: entity.reliefweb_resource.collection
+  base_route: system.admin_content
+  weight: 20

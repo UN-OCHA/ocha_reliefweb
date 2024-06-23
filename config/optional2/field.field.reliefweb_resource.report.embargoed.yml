@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.reliefweb_resource.embargoed
+    - ocha_relieweb.reliefweb_resource_type.report
+  module:
+    - datetime
+    - ocha_reliefweb
+  # enforced:
+  #   config:
+  #     - field.storage.reliefweb_resource.embargoed
+  #     - ocha_relieweb.reliefweb_resource_type.report
+  #   module:
+  #     - ocha_reliefweb
+id: reliefweb_resource.report.embargoed
+field_name: embargoed
+entity_type: reliefweb_resource
+bundle: report
+label: 'Embargo date'
+description: 'Date until when the document is embargoed. It will be automatically published on that date. It must be a UTC/GMT date.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime
