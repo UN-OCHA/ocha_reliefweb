@@ -26,6 +26,25 @@ interface ReliefWebResourceInterface extends ContentEntityInterface, EntityChang
   public function getApiResource(): string;
 
   /**
+   * Get the UUID of the resource in the API.
+   *
+   * If not set, this is computed from the resource URL on the current site
+   * and the DNS namespaced UUID V5 of reliefweb.int.
+   *
+   * @return string
+   *   UUID.
+   */
+  public function getResourceUuid(): string;
+
+  /**
+   * Get the URL of the resource on the current site.
+   *
+   * @return string
+   *   URL.
+   */
+  public function getResourceUrl(): string;
+
+  /**
    * Get the content of the resource.
    *
    * If this is a pending submission, we use the stored submitted content.

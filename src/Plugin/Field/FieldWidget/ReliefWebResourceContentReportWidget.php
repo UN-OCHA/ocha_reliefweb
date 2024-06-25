@@ -275,7 +275,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
 
     // Generate the upload location for the attachments.
     // @todo retrieve the base location from the configuration.
-    $upload_location = 'public://reliefweb-submissions/attachments/' . $entity->getResourceId() . '/';
+    $upload_location = 'public://reliefweb-submissions/attachments/' . $entity->getResourceUuid() . '/';
 
     $file_storage = $this->getEntityTypeManager()->getStorage('file');
 
@@ -432,7 +432,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
 
     // Generate the upload location for the images.
     // @todo retrieve the base location from the configuration.
-    $upload_location = 'public://reliefweb-submissions/images/' . $entity->getResourceId() . '/';
+    $upload_location = 'public://reliefweb-submissions/images/' . $entity->getResourceUuid() . '/';
 
     $element['value']['image'] = [
       '#type' => 'fieldset',
@@ -514,7 +514,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     // @todo handle attachments and image!
     return array_filter([
       'url' => $entity->getResourceUrl(),
-      'uuid' => $entity->getResourceId(),
+      'uuid' => $entity->getResourceUuid(),
       'title' => $values['title'] ?? '',
       'body' => (string) check_markup($values['body']['value'] ?? '', 'ocha_reliefweb_editor'),
       'source' => $this->toIntArray($values['source'] ?? []),
@@ -588,7 +588,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
   public function toImageItem(array $data): array {
     $storage = $this->getEntityTypeManager()->getStorage('file');
 
-    if (!isset($item['file'][0])) {
+    if (!isset($data['file'][0])) {
       return [];
     }
 
@@ -599,7 +599,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
 
     return array_filter([
       'url' => $file->createFileUrl(FALSE),
-      'uuid' => $item['uuid'] ?? $file->uuid(),
+      'uuid' => $data['uuid'] ?? $file->uuid(),
       'checksum' => $data['checksum'] ?? $this->getFileChecksum($file),
       'description' => $data['description'] ?? '',
       'copyright' => $data['copyright'] ?? '',

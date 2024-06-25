@@ -201,7 +201,7 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
     // @todo cache that statically but make sure it's not serialized
     // so that it's not stored in the entity cache.
     elseif ($this->getStatus() === 'published') {
-      $endpoint = $this->getResource() . '/' . $this->getResourceId();
+      $endpoint = $this->getResource() . '/' . $this->getResourceUuid();
       $data = $this->getReliefWebApiClient()->request('GET', $endpoint);
       return $this->apiDataToSubmittedContent($data['data'] ?? []);
     }
@@ -408,12 +408,9 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   }
 
   /**
-   * Get the UUID of the resource.
-   *
-   * @return string
-   *   UUID.
+   * {@inheritdoc}
    */
-  public function getResourceId() {
+  public function getResourceUuid(): string {
     // Use the stored UUID if defined otherwise generated one.
     // @todo handle the case with API data.
     if (empty($this->resource->value)) {
@@ -425,10 +422,7 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   }
 
   /**
-   * Get the URL of the resource.
-   *
-   * @return string
-   *   URL.
+   * {@inheritdoc}
    */
   public function getResourceUrl(): string {
     // Use the stored URL if defined otherwise generated one.
@@ -489,13 +483,17 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
+    // Ensue the resource UUID is set.
+    $this->getResourceUuid();
+
+    // Send the content to the ReliefWeb POST API.
     $this->submitContent();
   }
 
   /**
-   * Submit the content.
+   * Submit the content to the ReliefWeb POST API.
    */
-  public function submitContent(): void {
+  protected function submitContent(): void {
     if ($this->hasSubmittedContent()) {
       $config = $this->getConfig();
       $payload = $this->getSubmittedContent();
@@ -507,7 +505,8 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
         'X-RW-POST-API-PROVIDER' => '14e26e39-101b-4a6f-904d-9bf592983630',
         'X-RW-POST-API-KEY' => 'test-api-key',
       ];
-      $resource = $this->getApiResource() . '/' . $payload['uuid'];
+
+      $resource = $this->getApiResource() . '/' . $this->getResourceUuid();
 
       // Submit the content.
       // @todo maybe have submitContent return more than the message so for
