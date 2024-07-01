@@ -7,6 +7,10 @@ namespace Drupal\ocha_reliefweb\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
+use Drupal\ocha_reliefweb\ReliefWebApiClientInterface;
+use Drupal\ocha_reliefweb\ReliefWebApiClientTrait;
+use Drupal\ocha_reliefweb\ReliefWebConfigInterface;
+use Drupal\ocha_reliefweb\ReliefWebConfigTrait;
 
 /**
  * The 'reliefweb_resource_content_default_formatter' formatter plugin.
@@ -19,7 +23,10 @@ use Drupal\Core\Field\FormatterBase;
  *   }
  * )
  */
-class ReliefWebResourceContentDefaultFormatter extends FormatterBase {
+class ReliefWebResourceContentDefaultFormatter extends FormatterBase implements ReliefWebApiClientInterface, ReliefWebConfigInterface {
+
+  use ReliefWebApiClientTrait;
+  use ReliefWebConfigTrait;
 
   /**
    * {@inheritdoc}
