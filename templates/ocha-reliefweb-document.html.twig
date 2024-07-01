@@ -1,0 +1,26 @@
+{#
+
+/**
+ * @file
+ * Template of the reliefweb document pages.
+ *
+ * Available variables:
+ * - level: heading level
+ * - attributes: attributes for the document wrapper element
+ * - title: document title
+ * - title_attributes: attributes for the document title element
+ * - date: document publication date
+ * - content: document's content
+ * - content_attributes: attributes for the document content wrapper
+#}
+{{ attach_library('ocha_reliefweb/rw-document') }}
+<article{{ attributes.addClass('ocha-reliefweb-document')}}>
+  <header class="ocha-reliefweb-document__header">
+    <h{{ level }}{{ title_attributes.addClass('ocha-reliefweb-document__title') }}>{{ title }}</h{{ level }}>
+    <time class="ocha-reliefweb-document__date" datetime="{{ date|date('c') }} ">{{ date|date('j M Y') }}</time>
+  </header>
+  <div{{ content_attributes.addClass('ocha-reliefweb-document__content') }}>
+    {{- content|without('body') -}}
+    {{- content.body|render|sanitize_html(false, level + 1) -}}
+  </div>
+</article>
