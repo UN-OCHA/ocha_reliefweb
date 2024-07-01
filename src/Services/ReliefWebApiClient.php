@@ -120,7 +120,7 @@ class ReliefWebApiClient {
    *   The method (GET or POST) to use for the request.
    * @param string $resource
    *   API resource endpoint (ex: reports).
-   * @param array $payload
+   * @param ?array $payload
    *   API request payload (with fields, filters, sort etc.)
    * @param array $headers
    *   Extra request headers.
@@ -130,6 +130,8 @@ class ReliefWebApiClient {
    *   Request timeout.
    * @param bool $cache_enabled
    *   Whether to cache the queries or not.
+   * @param bool $refresh
+   *   If TRUE, skip the cached data and call the API to refresh it.
    *
    * @return array|string|null
    *   The data from the API response or NULL in case of error.
@@ -137,11 +139,12 @@ class ReliefWebApiClient {
   public function request(
     string $method,
     string $resource,
-    array $payload,
+    array $payload = NULL,
     array $headers = [],
     bool $decode = TRUE,
     int $timeout = 5,
     bool $cache_enabled = TRUE,
+    bool $refresh = FALSE,
   ): array|string|null {
     $queries = [
       $resource => [
@@ -149,6 +152,7 @@ class ReliefWebApiClient {
         'resource' => $resource,
         'payload' => $payload,
         'headers' => $headers,
+        'refresh' => $refresh,
       ],
     ];
 
@@ -161,7 +165,12 @@ class ReliefWebApiClient {
    *
    * @param array $queries
    *   List of queries to perform in parallel. Each item is an associative
-   *   array with the resource and the query payload.
+   *   array with the following properties:
+   *   - method: request method
+   *   - resource: API resource
+   *   - payload: optional API payload
+   *   - headers: optional headers
+   *   - refresh: optional flag to refresh the cached data.
    * @param bool $decode
    *   Whether to decode (json) the output or not.
    * @param int $timeout
@@ -191,6 +200,7 @@ class ReliefWebApiClient {
     foreach ($queries as $index => $query) {
       $method = $query['method'] ?? 'POST';
       $payload = $query['payload'] ?? [];
+      $refresh = !empty($query['refresh']);
 
       // Sanitize the query payload.
       if (is_array($payload)) {
@@ -208,7 +218,7 @@ class ReliefWebApiClient {
         $cache_ids[$index] = $cache_id;
         // Attempt to retrieve the cached data for the query.
         $cache = $this->cacheBackend->get($cache_id);
-        if (isset($cache->data)) {
+        if (!$refresh && isset($cache->data)) {
           $results[$index] = $cache->data;
         }
       }
@@ -794,34 +804,13 @@ class ReliefWebApiClient {
   }
 
   /**
-   * Update the host of API URL fields recursively.
+   * Get the request stack.
    *
-   * Note: this mostly for development to convert the URLs from the API used
-   * for dev (ex: stage) to URLs starting with `reliefweb.int`.
-   *
-   * @param array $data
-   *   API data.
-   * @param string $replacement
-   *   Replacement host and scheme.
-   * @param string $pattern
-   *   Pattern to replace.
-   * @param string $recursive
-   *   TRUE to also check subfields.
+   * @return \Symfony\Component\HttpFoundation\RequestStack
+   *   The request stack.
    */
-  public function updateApiUrls(
-    array &$data,
-    string $replacement = 'https://reliefweb.int/',
-    string $pattern = '#https?://[^/]+/#',
-    bool $recursive = TRUE,
-  ): void {
-    foreach ($data as $key => $item) {
-      if (is_string($item) && strpos($key, 'url') === 0) {
-        $data[$key] = preg_replace($pattern, $replacement, $item);
-      }
-      elseif (is_array($item) && $recursive) {
-        $this->updateApiUrls($data[$key], $replacement, $pattern, $recursive);
-      }
-    }
+  protected function getRequestStack(): RequestStack {
+    return $this->requestStack;
   }
 
   /**
