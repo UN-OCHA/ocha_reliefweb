@@ -203,8 +203,6 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
    *   The form element.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The form state.
-   * @param array $defaults
-   *   The default values for the attachments form element.
    */
   protected function addAttachmentsFormElement(array &$element, FormStateInterface $form_state): void {
     $entity = $form_state->getFormObject()->getEntity();
