@@ -10,4 +10,12 @@ use Drupal\Core\Entity\EntityDescriptionInterface;
  */
 interface ReliefWebResourceTypeInterface extends ConfigEntityInterface, EntityDescriptionInterface {
 
+  /**
+   * Get wether the display of the page title is disabled or not.
+   *
+   * @return bool
+   *   TRUE if the page title is disabled.
+   */
+  public function isPageTitleDisabled(): bool;
+
 }

@@ -11,6 +11,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
+use Drupal\ocha_reliefweb\Helpers\ReliefWebResourceHelper;
 use Drupal\ocha_reliefweb\Helpers\UuidHelper;
 use Drupal\ocha_reliefweb\ReliefWebApiClientTrait;
 use Drupal\ocha_reliefweb\ReliefWebConfigTrait;
@@ -111,13 +113,20 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   protected string $resourceUrl;
 
   /**
-   * The content for the entity.
+   * The API data for the entity.
    *
-   * @var array
+   * @var ?array
    *
-   * @see ::getContent()
+   * @see ::retrieveApiData()
    */
-  protected array $data;
+  protected ?array $apiData;
+
+  /**
+   * Flag to indicate the content should be submitted.
+   *
+   * @var bool
+   */
+  protected bool $submitContent = FALSE;
 
   /**
    * {@inheritdoc}
@@ -135,9 +144,10 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
 
     // This is a strict minimum to indicate the status of a submitted resource.
     $status_options = [
-      'published' => new TranslatableMarkup('Published'),
+      'queued' => new TranslatableMarkup('Queued'),
       'pending' => new TranslatableMarkup('Pending'),
-      'embargoed' => new TranslatableMarkup('Embargoed'),
+      'published' => new TranslatableMarkup('Published'),
+      'unpublished' => new TranslatableMarkup('Unpublished'),
       'refused' => new TranslatableMarkup('Refused'),
       'error' => new TranslatableMarkup('Error'),
     ];
@@ -195,17 +205,39 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
    * {@inheritdoc}
    */
   public function getContent(): array {
-    if ($this->hasSubmittedContent()) {
+    if ($this->getStatus() === 'published') {
+      $data = $this->retrieveApiData();
+      return $this->apiDataToSubmittedContent($data ?? []);
+    }
+    elseif ($this->hasSubmittedContent()) {
       return $this->getSubmittedContent();
     }
-    // @todo cache that statically but make sure it's not serialized
-    // so that it's not stored in the entity cache.
-    elseif ($this->getStatus() === 'published') {
-      $endpoint = $this->getResource() . '/' . $this->getResourceUuid();
-      $data = $this->getReliefWebApiClient()->request('GET', $endpoint);
-      return $this->apiDataToSubmittedContent($data['data'] ?? []);
+    return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getApiData(): array {
+    if ($this->getStatus() === 'published') {
+      return $this->retrieveApiData();
+    }
+    elseif ($this->hasSubmittedContent()) {
+      return $this->submittedContentToApiData($this->content->value);
     }
     return [];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function retrieveApiData(bool $refresh = FALSE): array {
+    if ($refresh || !isset($this->apiData)) {
+      $endpoint = $this->getApiResource() . '/' . $this->getResourceUuid();
+      $data = $this->getReliefWebApiClient()->request('GET', $endpoint);
+      $this->apiData = $data['data'][0]['fields'] ?? [];
+    }
+    return $this->apiData;
   }
 
   /**
@@ -258,24 +290,10 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   abstract public function apiDataToSubmittedContent(array $data): array;
 
   /**
-   * Process the data received from the ReliefWeb API.
-   *
-   * Transform the data from the API to the something similar to the submitted
-   * data.
-   *
-   * @param array $data
-   *   The data from the API.
-   *
-   * @return array
-   *   The processed data.
-   */
-  abstract protected function processApiData(array $data): array;
-
-  /**
    * {@inheritdoc}
    */
   public function getCreatedTime(): int {
-    return $this->created->value;
+    return (int) $this->created->value;
   }
 
   /**
@@ -283,6 +301,21 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
    */
   public function setCreatedTime(int $timestamp): static {
     return $this->set('created', $timestamp);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSubmitContent(): bool {
+    return $this->submitContent;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSubmitContent(bool $submit = TRUE): static {
+    $this->submitContent = $submit;
+    return $this;
   }
 
   /**
@@ -454,27 +487,41 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   protected function retrieveTermsFromApi(array $fields): array {
     $queries = [];
     foreach ($fields as $field => $data) {
-      $queries[$field] = [
-        'method' => 'GET',
-        'resource' => $data['resource'],
-        'payload' => [
-          'profile' => 'minimal',
-          'fields' => [
-            'include' => array_unique(array_merge([
-              'id',
-              'name',
-            ], $data['fields'] ?? [])),
+      if (!empty($data['ids'])) {
+        $queries[$field] = [
+          'method' => 'GET',
+          'resource' => $data['resource'],
+          'payload' => [
+            'profile' => 'minimal',
+            'fields' => [
+              'include' => array_unique(array_merge([
+                'id',
+                'name',
+              ], $data['fields'] ?? [])),
+            ],
+            'slim' => 1,
+            'filter' => [
+              'field' => 'id',
+              'value' => $data['ids'],
+            ],
+            'limit' => count($data['ids']),
           ],
-          'slim' => 1,
-          'filter' => [
-            'field' => 'id',
-            'value' => $data['ids'],
-          ],
-          'limit' => count($terms),
-        ],
-      ];
+        ];
+      }
     }
-    return $this->getReliefWebApiClient()->requestMultiple($queries);
+
+    $results = $this->getReliefWebApiClient()->requestMultiple($queries);
+    foreach ($results as $field => $result) {
+      $items = [];
+      foreach ($result['data'] ?? [] as $item) {
+        if (isset($item['fields'])) {
+          $items[] = $item['fields'];
+        }
+      }
+      $results[$field] = $items;
+    }
+
+    return array_filter($results);
   }
 
   /**
@@ -483,11 +530,13 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
-    // Ensue the resource UUID is set.
+    // Ensure the resource UUID is set.
     $this->getResourceUuid();
 
     // Send the content to the ReliefWeb POST API.
-    $this->submitContent();
+    if ($this->getSubmitContent()) {
+      $this->submitContent();
+    }
   }
 
   /**
@@ -499,11 +548,10 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
       $payload = $this->getSubmittedContent();
 
       $headers = [
-        // @todo review how to handle different providers and API keys.
-        // 'X-RW-POST-API-PROVIDER' => $config->get('reliefweb_api_post_api_provider_id'),
-        // 'X-RW-POST-API-KEY' => $config->get('reliefweb_api_post_api_api_key'),
-        'X-RW-POST-API-PROVIDER' => '14e26e39-101b-4a6f-904d-9bf592983630',
-        'X-RW-POST-API-KEY' => 'test-api-key',
+        // @todo retrieve that from the bundle entity settings to allow
+        // having different provider/key pairs for different resources.
+        'X-RW-POST-API-PROVIDER' => $config->get('reliefweb_api_post_api_provider_id'),
+        'X-RW-POST-API-KEY' => $config->get('reliefweb_api_post_api_api_key'),
       ];
 
       $resource = $this->getApiResource() . '/' . $this->getResourceUuid();
@@ -513,7 +561,7 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
       // example we can mark a submissions as refused etc.
       try {
         $message = $this->getReliefWebApiClient()->submitContent($resource, $payload, $headers);
-        $this->set('status', 'pending');
+        $this->set('status', 'queued');
         $this->set('message', $message);
       }
       catch (\Exception $exception) {
@@ -521,6 +569,32 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
         $this->set('message', $exception->getMessage());
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function toUrl($rel = 'canonical', array $options = []) {
+    if ($rel === 'canonical' && $this->getStatus() === 'published') {
+      $data = $this->retrieveApiData();
+      if (isset($data['url_alias'])) {
+        // @todo retrieve the base path from the entity type settings.
+        $url = ReliefWebResourceHelper::getWhiteLabelledUrlFromReliefWebUrl($data['url_alias']);
+        return Url::fromUri($url);
+      }
+    }
+    return parent::toUrl($rel, $options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __sleep() {
+    // Ensure we do not store the API data in the cache so that we don't end up
+    // we stale data.
+    $this->apiData = NULL;
+
+    return parent::__sleep();
   }
 
 }

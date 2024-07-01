@@ -96,6 +96,10 @@ class ReliefWebResourceForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
+    // Set a flag so the content is submitted.
+    $this->getEntity()->setSubmitContent(TRUE);
+
+    // Save the entity.
     parent::save($form, $form_state);
 
     // Redirect to the collection route after saving.

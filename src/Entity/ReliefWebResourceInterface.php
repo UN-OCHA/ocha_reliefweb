@@ -26,6 +26,14 @@ interface ReliefWebResourceInterface extends ContentEntityInterface, EntityChang
   public function getApiResource(): string;
 
   /**
+   * Get the ReliefWeb river associated with the resource.
+   *
+   * @return string
+   *   River.
+   */
+  public function getRiver(): string;
+
+  /**
    * Get the UUID of the resource in the API.
    *
    * If not set, this is computed from the resource URL on the current site
@@ -59,6 +67,25 @@ interface ReliefWebResourceInterface extends ContentEntityInterface, EntityChang
   public function getContent(): array;
 
   /**
+   * Get the API data for the resource.
+   *
+   * @return array
+   *   The API data for the resource.
+   */
+  public function getApiData(): array;
+
+  /**
+   * Get the API data for the resource.
+   *
+   * @param bool $refresh
+   *   Whether to use the statically cached data or refresh it.
+   *
+   * @return array
+   *   The API data for the resource.
+   */
+  public function retrieveApiData(bool $refresh = FALSE): array;
+
+  /**
    * Get the creation timestamp.
    *
    * @return int
@@ -76,5 +103,24 @@ interface ReliefWebResourceInterface extends ContentEntityInterface, EntityChang
    *   The called entity.
    */
   public function setCreatedTime(int $timestamp): static;
+
+  /**
+   * Get wether to submit content or not.
+   *
+   * @return bool
+   *   True if the content should be submitted.
+   */
+  public function getSubmitContent(): bool;
+
+  /**
+   * Set the submit content flag.
+   *
+   * @param bool $submit
+   *   Whether to submit the content or not.
+   *
+   * @return $this
+   *   The called entity.
+   */
+  public function setSubmitContent(bool $submit = TRUE): static;
 
 }

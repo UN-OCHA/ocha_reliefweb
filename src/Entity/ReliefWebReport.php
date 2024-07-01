@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ocha_reliefweb\Entity;
 
 use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\ocha_reliefweb\Helpers\FileHelper;
 
@@ -31,8 +32,8 @@ class ReliefWebReport extends ReliefWebResource {
   /**
    * {@inheritdoc}
    */
-  protected function processApiData(array $data): array {
-    return $data;
+  public function getRiver(): string {
+    return 'updates';
   }
 
   /**
@@ -67,32 +68,32 @@ class ReliefWebReport extends ReliefWebResource {
       ],
       'source' => [
         'resource' => 'sources',
-        'ids' => $content['source'],
+        'ids' => $content['source'] ?? [],
         'fields' => ['name', 'shortname'],
       ],
       'format' => [
         'resource' => 'references/content-formats',
-        'ids' => $content['format'],
+        'ids' => $content['format'] ?? [],
         'fields' => ['name'],
       ],
       'language' => [
         'resource' => 'references/languages',
-        'ids' => $content['language'],
+        'ids' => $content['language'] ?? [],
         'fields' => ['name', 'code'],
       ],
       'disaster' => [
         'resource' => 'disasters',
-        'ids' => $content['disaster'],
+        'ids' => $content['disaster'] ?? [],
         'fields' => ['name'],
       ],
       'disater_type' => [
         'resource' => 'references/disaster-types',
-        'ids' => $content['disater_type'],
+        'ids' => $content['disater_type'] ?? [],
         'fields' => ['name'],
       ],
       'theme' => [
         'resource' => 'references/themes',
-        'ids' => $content['theme'],
+        'ids' => $content['theme'] ?? [],
         'fields' => ['name'],
       ],
     ]);
@@ -101,9 +102,9 @@ class ReliefWebReport extends ReliefWebResource {
       $file = $this->loadFile($item);
       if (isset($file)) {
         $data['file'][] = [
-          'url' => $file->createFileUrl(TRUE),
+          'url' => $this->generateFilePreviewUrl($file),
           'filename' => $file->getFileName(),
-          'filesize' => $file->getFileSize(),
+          'filesize' => $file->getSize(),
           'mimetype' => $file->getMimeType(),
         ];
       }
@@ -112,16 +113,20 @@ class ReliefWebReport extends ReliefWebResource {
     if (isset($content['image'])) {
       $file = $this->loadFile($content['image']);
       if (isset($file)) {
-        $size = @getimagesize($file);
-        $data['image'][] = [
-          'url' => $file->createFileUrl(TRUE),
+        $image_size = @getimagesize($file->getFileUri());
+        $image_url = $this->generateFilePreviewUrl($file);
+        $data['image'] = [
+          'url' => $image_url,
+          'url-small' => $image_url,
+          'url-medium' => $image_url,
+          'url-large' => $image_url,
           'filename' => $file->getFileName(),
-          'filesize' => $file->getFileSize(),
+          'filesize' => $file->getSize(),
           'mimetype' => $file->getMimeType(),
           'copyright' => $content['image']['copyright'] ?? '',
           'caption' => $content['image']['description'] ?? '',
-          'width' => $size[0] ?? NULL,
-          'height' => $size[1] ?? NULL,
+          'width' => $image_size[0] ?? NULL,
+          'height' => $image_size[1] ?? NULL,
         ];
       }
     }
@@ -130,12 +135,27 @@ class ReliefWebReport extends ReliefWebResource {
   }
 
   /**
+   * Generate the preview URL for a file.
+   *
+   * @param \Drupal\file\FileInterface $file
+   *   The file.
+   *
+   * @return string
+   *   The URL.
+   */
+  protected function generateFilePreviewUrl(FileInterface $file): string {
+    return Url::fromRoute('ocha_reliefweb.file.preview', [
+      'file' => $file->id(),
+    ], ['absolute' => TRUE])->toString();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function apiDataToSubmittedContent(array $data): array {
     $content = [
       'url' => $this->getResourceUrl(),
-      'uuid' => $data['uuid'],
+      'uuid' => $this->getResourceUuid(),
       'title' => $data['title'],
       // @todo check if we should pass that to check_markup to ensure all the
       // filters are applied.
@@ -155,7 +175,7 @@ class ReliefWebReport extends ReliefWebResource {
     ];
 
     foreach ($mapping as $api_field => $field) {
-      foreach ($data[$api_field] as $item) {
+      foreach ($data[$api_field] ?? [] as $item) {
         if (isset($item['id'])) {
           $content[$field][] = $item['id'];
         }
@@ -166,7 +186,7 @@ class ReliefWebReport extends ReliefWebResource {
       $content['file'][] = array_filter([
         // @todo convert to `reliefweb://` scheme?
         'url' => $file['url'],
-        'uuid' => FileHelper::getFileUuidFromUri($file),
+        'uuid' => FileHelper::getFileUuidFromUri($file['url']),
         'filename' => $file['filename'],
         'description' => $file['description'] ?? NULL,
         // @todo check if that is exposed in the API.
@@ -178,7 +198,7 @@ class ReliefWebReport extends ReliefWebResource {
       $content['image'] = array_filter([
         // @todo convert to `reliefweb://` scheme?
         'url' => $data['image']['url'],
-        'uuid' => FileHelper::getFileUuidFromUri($data['image']),
+        'uuid' => FileHelper::getFileUuidFromUri($data['image']['url']),
         'copyright' => $file['copyright'] ?? NULL,
         'description' => $file['caption'] ?? NULL,
       ]);

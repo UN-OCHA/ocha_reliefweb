@@ -80,6 +80,13 @@ class ReliefWebResourceType extends ConfigEntityBundleBase implements ReliefWebR
   protected $description;
 
   /**
+   * The bundle settings.
+   *
+   * @var array
+   */
+  protected $settings = [];
+
+  /**
    * {@inheritdoc}
    */
   public function getDescription() {
@@ -98,6 +105,13 @@ class ReliefWebResourceType extends ConfigEntityBundleBase implements ReliefWebR
    */
   public function getStatus() {
     return $this->status;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isPageTitleDisabled(): bool {
+    return $this->settings['disable_page_title'] ?? TRUE;
   }
 
 }
