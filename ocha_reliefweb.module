@@ -123,5 +123,18 @@ function ocha_reliefweb_file_presave(FileInterface $file) {
   $new_uuid = UuidHelper::generateUuidV5($resource_uuid, $url);
 
   $file->set('uuid', $new_uuid);
+}
 
+/**
+ * Implements hook_preprocess_page_title().
+ */
+function ocha_reliefweb_preprocess_page_title(array &$variables) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  if ($route_name === 'entity.reliefweb_resource.canonical') {
+    $entity = $route_match->getParameter('reliefweb_resource');
+    if ($entity->bundle->entity->isPageTitleDisabled()) {
+      $variables['title'] = new HtmlEscapedText('');
+    }
+  }
 }
