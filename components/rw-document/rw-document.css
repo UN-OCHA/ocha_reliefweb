@@ -1,0 +1,104 @@
+/**
+ * ReliefWeb document page.
+ */
+
+/* Lists in content. */
+.ocha-reliefweb-document li {
+  margin: 8px 0 0;
+}
+
+/* Attachments. */
+.ocha-reliefweb-attachment-list {
+  max-width: var(--cd-max-content-width);
+  margin: 0 0 24px 0;
+}
+.ocha-reliefweb-attachment-list--report {
+  max-width: 220px;
+  margin: 0 auto 24px auto;
+}
+.ocha-reliefweb-attachment-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ocha-reliefweb-attachment-list li {
+  margin: 0;
+  padding: 16px 0;
+  text-align: center;
+  border: 1px solid var(--brand-grey);
+}
+.ocha-reliefweb-attachment-list li + li {
+  margin-top: 24px;
+}
+.ocha-reliefweb-attachment-list img {
+  width: 100%;
+  margin: -16px 0 8px 0;
+  border-bottom: 1px solid var(--brand-grey);
+}
+.ocha-reliefweb-attachment-list strong {
+  display: block;
+  padding: 0 16px;
+}
+.ocha-reliefweb-attachment-list strong:first-letter {
+  text-transform: capitalize;
+}
+.ocha-reliefweb-attachment-list span {
+  display: block;
+  padding: 4px 16px 0 16px;
+  font-size: 14px;
+}
+
+.ocha-reliefweb-attachment-list__footer {
+  margin-top: 24px;
+}
+.ocha-reliefweb-attachment-list__footer a[target="_blank"][rel~="noopener"]:after {
+  display: inline-block;
+  overflow: hidden;
+  width: 12px;
+  height: 12px;
+  margin: -2px 0 0 6px;
+  content: "";
+  vertical-align: middle;
+  background: var(--rw-icons--common--external-link--12--dark-blue);
+}
+
+@media screen and (min-width: 480px) {
+  .ocha-reliefweb-attachment-list--report {
+    float: right;
+    margin-left: 24px;
+  }
+}
+
+/* Attachments for interactive content. */
+.ocha-reliefweb-attachment-list--interactive .ocha-reliefweb-attachment-list__title {
+  margin: 0 0 24px 0;
+  font-size: var(--cd-font-size--base);
+  font-weight: normal;
+}
+
+/* Reading width. */
+.ocha-reliefweb-document .ocha-reliefweb-document__content ul,
+.ocha-reliefweb-document .ocha-reliefweb-document__content ol,
+.ocha-reliefweb-document .ocha-reliefweb-document__content p {
+  max-width: var(--cd-max-content-width);
+}
+
+.ocha-reliefweb-document .ocha-reliefweb-document__content .rw-entity-image {
+  max-width: var(--cd-max-content-width);
+  margin: 0;
+}
+.ocha-reliefweb-document .ocha-reliefweb-document__content .rw-entity-image img {
+  width: 100%;
+}
+
+.ocha-reliefweb-document .ocha-reliefweb-document__content p:first-child,
+.ocha-reliefweb-document .ocha-reliefweb-document__content > .ocha-reliefweb-attachment-list + p {
+  margin-top: 0;
+}
+
+/* Additional spacing above page title */
+  @media screen and (min-width: 768px) {
+    .ocha-reliefweb-document .cd-page-title {
+      margin-top: 3rem;
+    }
+  }

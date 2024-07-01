@@ -7,10 +7,195 @@
 
 declare(strict_types=1);
 
+use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\file\FileInterface;
 use Drupal\ocha_reliefweb\Helpers\ClassHelper;
 use Drupal\ocha_reliefweb\Helpers\UuidHelper;
 use Drupal\ocha_reliefweb\ReliefWebBundleEntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function ocha_reliefweb_theme() {
+  $themes = [
+    // Theme for a ReliefWeb document.
+    'ocha_reliefweb_document' => [
+      'variables' => [
+        // Heading level.
+        'level' => 1,
+        // Wrapper attributes.
+        'attributes' => NULL,
+        // Document title.
+        'title' => NULL,
+        // Attributes for the title.
+        'title_attributes' => NULL,
+        // Document publication date.
+        'date' => NULL,
+        // Document's main content.
+        'content' => NULL,
+        // Attributes for the content.
+        'content_attributes' => NULL,
+      ],
+    ],
+    // Theme for a list of attachments.
+    'ocha_reliefweb_attachment_list' => [
+      'variables' => [
+        // Section heading level.
+        'level' => 2,
+        // Section attributes.
+        'attributes' => NULL,
+        // Section title.
+        'title' => t('Attachments'),
+        // Section title attributes.
+        'title_attributes' => NULL,
+        // Type of attachments.
+        'type' => NULL,
+        // List of files. Each item has the following properties:
+        // - url: link to the file
+        // - name: file name
+        // - label: file name or 'Download' etc.
+        // - description: file description (extension, size, language etc.)
+        'list' => [],
+        // List attributes.
+        'list_attributes' => NULL,
+        // Section footer.
+        'footer' => NULL,
+        // Section footer attributes.
+        'footer_attributes' => NULL,
+        // Flag to indicate if the first attachment's preview should be lazy
+        // loaded or not.
+        'lazy_load_first_preview' => FALSE,
+      ],
+    ],
+    // Theme for a list of articles.
+    'ocha_reliefweb_river' => [
+      'variables' => [
+        // Heading level for the river section.
+        'level' => 2,
+        // The id of the river section.
+        'id' => '',
+        // The API resource (ex: reports).
+        'resource' => '',
+        // Section attributes.
+        'attributes' => NULL,
+        // Title of the river section.
+        'title' => NULL,
+        // Title attributes.
+        'title_attributes' => NULL,
+        // Results attributes.
+        'results_attributes' => NULL,
+        // River attributes.
+        'river_attributes' => NULL,
+        // Results (optional). See "ocha_reliefweb_results" below.
+        'results' => NULL,
+        // The article entities to display.
+        'entities' => [],
+        // Article attributes.
+        'article_attributes' => NULL,
+        // View more link (optional) URL to the full river and link text.
+        'more' => NULL,
+        // Pager (optional). See "ocha_reliefweb_river_results" below.
+        'pager' => NULL,
+        // Message for when there are no items.
+        'empty' => t('No results found.'),
+      ],
+    ],
+    // Theme for a the number of results in a list of articles.
+    'ocha_reliefweb_river_results' => [
+      'variables' => [
+        // Section attributes.
+        'attributes' => NULL,
+        // The total number of resources matching the search query.
+        'total' => 0,
+        // The start of the result range.
+        'start' => 0,
+        // The end of the result range.
+        'end' => 0,
+      ],
+    ],
+    // Theme for an article in a list of articles.
+    'ocha_reliefweb_river_article' => [
+      'variables' => [
+        // Heading level for the river article.
+        'level' => 3,
+        // Article attributes.
+        'attributes' => NULL,
+        // The aricle entity's data as an associative array with id, bundle,
+        // url, langcode, title etc.
+        'entity' => NULL,
+        // Meta information attributes.
+        'meta_attributes' => NULL,
+      ],
+    ],
+    // Theme for the title of an article in a list of articles.
+    'ocha_reliefweb_river_article_title' => [
+      'variables' => [
+        // Heading level for the river article title.
+        'level' => 3,
+        // Article title attributes.
+        'attributes' => NULL,
+        // Language code of the title.
+        'langcode' => 'en',
+        // An optional HTML safe prefix.
+        'prefix' => '',
+        // URL to the full article.
+        'url' => '',
+        // Title to the article.
+        'title' => '',
+      ],
+    ],
+    // Theme for the country slug of an article.
+    'ocha_reliefweb_entity_country_slug' => [
+      'variables' => [
+        // Wrapper attributes.
+        'attributes' => NULL,
+        // List of countries with the a url to either the country page or the
+        // river filtered by the country, a name and a shortname.
+        'countries' => [],
+      ],
+    ],
+    'ocha_reliefweb_entity_image' => [
+      'variables' => [
+        // Wrapper attributes.
+        'attributes' => NULL,
+        // Image information with urls (different sizes), width, height, alt
+        // and copyright and optionally the loading mode.
+        'image' => [],
+        // Flag to indicate whether to show the caption or not.
+        'caption' => TRUE,
+        // Flag to indicate the default loading mode: lazy or eager.
+        'loading' => 'lazy',
+      ],
+    ],
+    // Theme for an article's detailed information (ex: source, format).
+    'ocha_reliefweb_entity_meta' => [
+      'variables' => [
+        // Wrapper attributes.
+        'attributes' => NULL,
+        // Flag indicating the list of meta is the "core" meta information,
+        // usually displayed in river articles or below the title on article
+        // pages.
+        'core' => TRUE,
+        // List of meta information for an article (ex: dates, sources etc.).
+        // Each meta data has the following properties: type (simple, date,
+        // date-range or taglist), label, value (simple, date, array with start
+        // and end date or list of tags). For tag lists, there are also count
+        // and sort properties.
+        'meta' => [],
+      ],
+    ],
+  ];
+
+  // Add themes for the main river articles.
+  $entity_types = \Drupal::entityTypeManager()->getStorage('reliefweb_resource_type')->loadMultiple();
+  foreach ($entity_types as $entity_type) {
+    $themes['ocha_reliefweb_river_article__' . $entity_type->id()] = [
+      'base hook' => 'ocha_reliefweb_river_article',
+    ];
+  }
+
+  return $themes;
+}
 
 /**
  * Implements hook_entity_bundle_info_alter().

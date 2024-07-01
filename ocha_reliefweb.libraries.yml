@@ -1,0 +1,4 @@
+rw-document:
+  css:
+    component:
+      components/rw-document/rw-document.css: {}
