@@ -8,3 +8,8 @@ services:
   ocha_reliefweb.api.client:
     class: Drupal\ocha_reliefweb\Services\ReliefWebApiClient
     arguments: ['@cache.ocha_reliefweb', '@config.factory', '@datetime.time', '@http_client', '@logger.factory', '@request_stack']
+  paramconverter.reliefweb_resource_uuid:
+    class: Drupal\ocha_reliefweb\ParamConverter\ReliefWebResourceUuidParamConverter
+    tags:
+      - { name: paramconverter }
+    arguments: ['@entity_type.manager']

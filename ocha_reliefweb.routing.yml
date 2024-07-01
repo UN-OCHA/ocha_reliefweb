@@ -1,9 +1,24 @@
-ocha_reliefweb.post.report:
-  path: '/content/reliefweb/post/report'
+ocha_reliefweb.post_api.webhook:
+  path: '/webhook/reliefweb-resource/{resource}'
   defaults:
-    _title: 'Post report'
-    _form: '\Drupal\ocha_reliefweb\Form\ReportForm'
+    _controller: '\Drupal\ocha_reliefweb\Controller\ReliefWebPostApiWebhookController::updateResource'
+    _title: 'ReliefWeb POST API webhook'
   options:
-    _admin_route: TRUE
+    parameters:
+      resource:
+        type: reliefweb_resource_uuid
   requirements:
-    _permission: 'post reliefweb report'
+    _permission: 'access reliefweb resource update webhook'
+    _format: 'json'
+
+ocha_reliefweb.file.preview:
+  path: '/reliefweb-resource-file-preview/{file}'
+  defaults:
+    _controller: '\Drupal\ocha_reliefweb\Controller\ReliefWebFilePreviewController::downloadFile'
+    _title: 'ReliefWeb POST API webhook'
+  options:
+    parameters:
+      file:
+        type: entity:file
+  requirements:
+    _permission: 'access reliefweb resource preview files'

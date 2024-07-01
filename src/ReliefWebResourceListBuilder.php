@@ -33,19 +33,10 @@ class ReliefWebResourceListBuilder extends EntityListBuilder {
       '#markup' => $entity->bundle->entity->label(),
     ];
 
-    $status = $entity->getStatus();
-    if ($status === 'published') {
-      $row['title']['data'] = [
-        '#type' => 'link',
-        '#title' => $entity->label(),
-      // @todo generate a whitelisted URL for example.
-      ] + $entity->toUrl()->toRenderArray();
-    }
-    else {
-      $row['title']['data'] = [
-        '#markup' => $entity->label(),
-      ];
-    }
+    $row['title']['data'] = [
+      '#type' => 'link',
+      '#title' => $entity->label(),
+    ] + $entity->toUrl()->toRenderArray();
 
     $row['created']['data'] = $entity->created->view([
       'label' => 'hidden',
