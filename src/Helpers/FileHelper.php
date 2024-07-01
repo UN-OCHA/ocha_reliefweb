@@ -19,11 +19,27 @@ class FileHelper {
    *   UUID.
    */
   public static function getFileUuidFromUri(string $uri): string {
-    if (empt($uri)) {
+    if (empty($uri)) {
       return '';
     }
     $uuid = preg_replace('#.+/([^.]+)\..+$#', '$1', $uri);
     return $uuid !== $uri ? $uuid : '';
+  }
+
+  /**
+   * Extract the extension of the file.
+   *
+   * @param string $file_name
+   *   File name.
+   *
+   * @return string
+   *   File extension in lower case.
+   */
+  public static function extractFileExtension($file_name) {
+    if (empty($file_name)) {
+      return '';
+    }
+    return mb_strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
   }
 
 }
