@@ -20,7 +20,9 @@ reliefweb_api_converter: https://reliefweb.int/search/converter/json
 reliefweb_api_use_redirects: true
 # Base url for the POST API JSON schemas.
 reliefweb_api_post_api_schema_url: https://reliefweb.int/post-api-schemas/v2/
-# Base url for the POST API submissions.
-reliefweb_api_submission_base_url:
+# Base url or path for the POST API submissions.
+reliefweb_api_submission_base_url: /reliefweb-submissions
+# Base URI for the POST API submission files.
+reliefweb_api_submission_file_base_uri: public://reliefweb-submissions
 # Class prefix for templates.
 template_class_prefix: ocha-reliefweb

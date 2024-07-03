@@ -62,7 +62,6 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
       '#default_value' => $defaults['title'] ?? NULL,
     ];
 
-    // @todo we need to provide a text format with a default editor.
     $element['value']['body'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Body'),
@@ -78,6 +77,11 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
       label: $this->t('Source'),
       description: $this->t('Source(s) of the document.'),
       fields: ['shortname'],
+      // Only return report sources.
+      filter: [
+        'field' => 'content_type',
+        'value' => 'report',
+      ],
       default_value: $defaults['source'] ?? NULL,
     );
 
@@ -228,7 +232,6 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
 
     // Initialize the form element with at least one row to upload a file
     // to reduce the number of clicks.
-    // @todo we need to initialize that when editing a document.
     $attachments = $form_state->get($parents);
 
     // Initialize the list of attachments.
@@ -257,8 +260,8 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
         $this->t('Description'),
         $this->t('Language'),
         $this->t('Weight'),
-        // @todo add colspan or something to handle the checksum and original
-        // uuid columns.
+        '',
+        '',
       ],
       '#empty' => $this->t('No files.'),
       '#tabledrag' => [
@@ -272,8 +275,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     ];
 
     // Generate the upload location for the attachments.
-    // @todo retrieve the base location from the configuration.
-    $upload_location = 'public://reliefweb-submissions/attachments/' . $entity->getResourceUuid() . '/';
+    $upload_location = $this->generateFileUploadLocation('/attachments/' . $entity->getResourceUuid());
 
     $file_storage = $this->getEntityTypeManager()->getStorage('file');
 
@@ -293,12 +295,11 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
       // instead. When clicking this replace button, show a new upload widget.
       $element['value']['attachments']['list'][$delta]['file'] = [
         '#type' => 'managed_file',
-        // @todo retrieve the location from the configuration.
         '#upload_location' => $upload_location,
         '#upload_validators' => [
           'FileExtension' => ['extensions' => 'pdf'],
           'FileNameLength' => [],
-          // @todo retrieve that from the config?
+          // @todo retrieve that from the config or the specifications.
           'FileSizeLimit' => ['fileLimit' => 20 * 1024 * 1024],
         ],
         '#default_value' => $default['file'] ?? NULL,
@@ -429,8 +430,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     $defaults = $form_state->getValue($parents) ?: [];
 
     // Generate the upload location for the images.
-    // @todo retrieve the base location from the configuration.
-    $upload_location = 'public://reliefweb-submissions/images/' . $entity->getResourceUuid() . '/';
+    $upload_location = $this->generateFileUploadLocation('/images/' . $entity->getResourceUuid());
 
     $element['value']['image'] = [
       '#type' => 'fieldset',
@@ -439,12 +439,11 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     ];
     $element['value']['image']['file'] = [
       '#type' => 'managed_file',
-      // @todo retrieve the location from the configuration.
       '#upload_location' => $upload_location,
       '#upload_validators' => [
         'FileExtension' => ['extensions' => 'jpg png webp'],
         'FileNameLength' => [],
-        // @todo retrieve that from the config?
+        // @todo retrieve that from the config or the specifications.
         'FileSizeLimit' => ['fileLimit' => 5 * 1024 * 1024],
         'FileImageDimensions' => [
           'maxDimensions' => '2048x2048',
@@ -509,7 +508,6 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
   public function getDataFromForm(array $values, array $form, FormStateInterface $form_state) {
     $entity = $form_state->getFormObject()->getEntity();
 
-    // @todo handle attachments and image!
     return array_filter([
       'url' => $entity->getResourceUrl(),
       'uuid' => $entity->getResourceUuid(),
@@ -612,7 +610,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     if (!empty($defaults['published'])) {
       $defaults['published'] = new DrupalDateTime($defaults['published']);
     }
-    // @todo it's not convenient not have separate fields, consider changing
+    // @todo it's not convenient not to have separate fields, consider changing
     // the specifications.
     if (empty($defaults['primary_country']) && !empty($defaults['country'])) {
       $defaults['primary_country'] = [array_shift($defaults['country'])];
@@ -658,6 +656,23 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
       }
     }
     return $data;
+  }
+
+  /**
+   * Generate the upload location for a file.
+   *
+   * @param string $path
+   *   Path relative to the base location URI.
+   *
+   * @return string
+   *   Upload location.
+   */
+  protected function generateFileUploadLocation(string $path): string {
+    $base_uri = $this->getConfig()->get('reliefweb_api_submission_file_base_uri');
+    if (empty($base_uri)) {
+      throw new \Exception('Missing submission file base URI.');
+    }
+    return rtrim($base_uri, '/') . '/' . trim($path, '/') . '/';
   }
 
 }

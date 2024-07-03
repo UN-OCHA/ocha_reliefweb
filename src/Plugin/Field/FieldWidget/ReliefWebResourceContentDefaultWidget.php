@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\ocha_reliefweb\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -14,6 +15,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ocha_reliefweb\Helpers\LocalizationHelper;
 use Drupal\ocha_reliefweb\ReliefWebApiClientInterface;
 use Drupal\ocha_reliefweb\ReliefWebApiClientTrait;
+use Drupal\ocha_reliefweb\ReliefWebConfigInterface;
+use Drupal\ocha_reliefweb\ReliefWebConfigTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,9 +30,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class ReliefWebResourceContentDefaultWidget extends WidgetBase implements ReliefWebApiClientInterface {
+class ReliefWebResourceContentDefaultWidget extends WidgetBase implements ReliefWebApiClientInterface, ReliefWebConfigInterface {
 
   use ReliefWebApiClientTrait;
+  use ReliefWebConfigTrait;
 
   /**
    * Constructor.
@@ -44,6 +48,8 @@ class ReliefWebResourceContentDefaultWidget extends WidgetBase implements Relief
    *   The widget settings.
    * @param array $third_party_settings
    *   Any third party settings.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory.
    * @param \Drupal\Core\Field\FieldDefinitionInterface $entityTypeManager
    *   The entity type manager.
    */
@@ -53,6 +59,7 @@ class ReliefWebResourceContentDefaultWidget extends WidgetBase implements Relief
     FieldDefinitionInterface $field_definition,
     array $settings,
     array $third_party_settings,
+    protected ConfigFactoryInterface $configFactory,
     protected EntityTypeManagerInterface $entityTypeManager,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
@@ -73,6 +80,7 @@ class ReliefWebResourceContentDefaultWidget extends WidgetBase implements Relief
       $configuration['field_definition'],
       $configuration['settings'],
       $configuration['third_party_settings'],
+      $container->get('config.factory'),
       $container->get('entity_type.manager'),
     );
   }

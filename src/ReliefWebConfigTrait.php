@@ -15,9 +15,16 @@ trait ReliefWebConfigTrait {
   /**
    * The config factory.
    *
-   * @var ?\Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected ConfigFactoryInterface $configFactory;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfigFactory(ConfigFactoryInterface $config_factory): void {
+    $this->configFactory = $config_factory;
+  }
 
   /**
    * {@inheritdoc}
