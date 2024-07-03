@@ -1,5 +1,5 @@
-ReliefWeb Meta
-==============
+OCHA ReliefWeb Meta
+===================
 
 This component provides rules for the "meta" information of articles.
 

@@ -5,6 +5,7 @@
  * Template file for the country slug of an entity.
  *
  * Available variables:
+ * - class_prefix: class prefix
  * - attributes: wrapper attributes
  * - countries: list of countries with the following properties:
  *   - url: url to either the country page or the river filtered by the country
@@ -15,16 +16,16 @@
 #}
 {% if countries %}
 {% apply spaceless %}
-<p{{ attributes.addClass('rw-entity-country-slug') }}>
-  {% for item in countries|taglist(1, 'shortname') %}
+<p{{ attributes.addClass(class_prefix ~ '-entity-country-slug') }}>
+  {% for item in countries|ocha_reliefweb_taglist(1, 'shortname') %}
     {% if item.url is empty %}
-      <span class="rw-entity-country-slug__link">{{ item.shortname ?? item.name }}</span>
+      <span class="{{ class_prefix }}-entity-country-slug__link">{{ item.shortname ?? item.name }}</span>
     {% else %}
-      <a class="rw-entity-country-slug__link" href="{{ item.url }}">{{ item.shortname ?? item.name }}</a>
+      <a class="{{ class_prefix }}-entity-country-slug__link" href="{{ item.url }}">{{ item.shortname ?? item.name }}</a>
     {% endif %}
   {% endfor %}
   {% if countries|length > 1 %}
-    <span class="rw-entity-country-slug__more">{{ ' + @count more'|t({
+    <span class="{{ class_prefix }}-entity-country-slug__more">{{ ' + @count more'|t({
       '@count': (countries|length) - 1,
     }) }}</span>
   {% endif %}

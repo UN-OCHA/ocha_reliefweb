@@ -4,7 +4,8 @@
  * @file
  * Template file for an image displayed in an entity article.
  *
- * Available variables;
+ * Available variables:
+ * - class_prefix: class prefix
  * - attributes: figure attributes
  * - image: array with urls (different sizes), alt, width, height, alt and
  *   copyright and optionally the loading mode.
@@ -16,17 +17,17 @@
  */
 
 #}
-{% if image.url %}
+{% if image.url and image['url-small'] and image['url-medium'] and image['url-large'] and image.width and image.height %}
 <figure{{ attributes
   .addClass([
-    'rw-entity-image',
-    caption and image.alt is not empty ? 'rw-entity-image--with-caption',
-    image.copyright is not empty ? 'rw-entity-image--with-copyright',
+    class_prefix ~ '-entity-image',
+    caption and image.alt is not empty ? class_prefix ~ '-entity-image--with-caption',
+    image.copyright is not empty ? class_prefix ~ '-entity-image--with-copyright',
   ])
 }}>
 
 
-  <picture class="rw-entity-image__image">
+  <picture class="{{ class_prefix }}-entity-image__image">
     <source srcset="{{ image['url-small'] }}" media="(max-width: 220px)" />
     <source srcset="{{ image['url-medium'] }}" media="(max-width: 450px)" />
     <source srcset="{{ image['url-large'] }}" />
@@ -41,13 +42,13 @@
   {% if caption and image.alt is not empty %}
   {# We use aria-hidden="true" because we already set the image alt. This
      prevents the alt text to be read twice by screen readers. #}
-  <figcaption class="rw-entity-image__caption" aria-hidden="true">
+  <figcaption class="{{ class_prefix }}-entity-image__caption" aria-hidden="true">
     {{ image.alt }}
   </figcaption>
   {% endif %}
 
   {% if image.copyright is not empty %}
-  <footer class="rw-entity-image__copyright">
+  <footer class="{{ class_prefix }}-entity-image__copyright">
     <small>&copy; {{ image.copyright }}</small>
   </footer>
   {% endif %}

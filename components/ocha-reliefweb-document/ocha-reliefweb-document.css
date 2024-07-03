@@ -2,6 +2,26 @@
  * ReliefWeb document page.
  */
 
+/* Title */
+.ocha-reliefweb-document__title {
+  max-width: var(--cd-max-content-width);
+  color: var(--cd-black);
+  border-bottom: 0 none;
+  font-size: var(--cd-font-size--2xbase);
+}
+
+@media screen and (min-width: 1024px) {
+  .ocha-reliefweb-document__title {
+    font-size: var(--cd-font-size--2xlarge);
+  }
+}
+
+/* Content. */
+.ocha-reliefweb-document__content {
+  padding-top: 2rem;
+  border-top: 1px solid var(--brand-grey);
+}
+
 /* Lists in content. */
 .ocha-reliefweb-document li {
   margin: 8px 0 0;
@@ -83,11 +103,11 @@
   max-width: var(--cd-max-content-width);
 }
 
-.ocha-reliefweb-document .ocha-reliefweb-document__content .rw-entity-image {
+.ocha-reliefweb-document .ocha-reliefweb-document__content .ocha-reliefweb-entity-image {
   max-width: var(--cd-max-content-width);
   margin: 0;
 }
-.ocha-reliefweb-document .ocha-reliefweb-document__content .rw-entity-image img {
+.ocha-reliefweb-document .ocha-reliefweb-document__content .ocha-reliefweb-entity-image img {
   width: 100%;
 }
 
@@ -96,9 +116,9 @@
   margin-top: 0;
 }
 
-/* Additional spacing above page title */
-  @media screen and (min-width: 768px) {
-    .ocha-reliefweb-document .cd-page-title {
-      margin-top: 3rem;
-    }
-  }
+/* Story node */
+.ocha-reliefweb-document__footer {
+  margin-top: 3rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--brand-grey);
+}

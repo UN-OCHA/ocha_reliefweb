@@ -5,6 +5,7 @@
  * Template of the reliefweb document pages.
  *
  * Available variables:
+ * - class_prefix: class prefix
  * - level: heading level
  * - attributes: attributes for the document wrapper element
  * - title: document title
@@ -13,14 +14,16 @@
  * - content: document's content
  * - content_attributes: attributes for the document content wrapper
 #}
-{{ attach_library('ocha_reliefweb/rw-document') }}
-<article{{ attributes.addClass('ocha-reliefweb-document')}}>
-  <header class="ocha-reliefweb-document__header">
-    <h{{ level }}{{ title_attributes.addClass('ocha-reliefweb-document__title') }}>{{ title }}</h{{ level }}>
-    <time class="ocha-reliefweb-document__date" datetime="{{ date|date('c') }} ">{{ date|date('j M Y') }}</time>
+{{ attach_library('ocha_reliefweb/ocha-reliefweb-document') }}
+<article{{ attributes.addClass(class_prefix ~ '-document')}}>
+  <header class="{{ class_prefix }}-document__header">
+    <h{{ level }}{{ title_attributes.addClass(class_prefix ~ '-document__title') }}>{{ title }}</h{{ level }}>
   </header>
-  <div{{ content_attributes.addClass('ocha-reliefweb-document__content') }}>
+  <div{{ content_attributes.addClass(class_prefix ~ '-document__content') }}>
     {{- content|without('body') -}}
-    {{- content.body|render|sanitize_html(false, level + 1) -}}
+    {{- content.body|render|ocha_reliefweb_sanitize_html(false, level + 1) -}}
   </div>
+  <footer class="{{ class_prefix }}-document__footer">
+    <time class="{{ class_prefix }}-document__date" datetime="{{ date|date('c') }} ">{{ date|date('j M Y') }}</time>
+  </header>
 </article>

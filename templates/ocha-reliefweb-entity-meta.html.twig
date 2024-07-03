@@ -5,6 +5,7 @@
  * Template file for an entity meta information.
  *
  * Available variables:
+ * - class_prefix: class prefix
  * - attributes: wrapper attributes
  * - core: flag indicating the list of meta is the "core" meta information,
  *   usually displayed in river articles or below the title on article pages.
@@ -28,8 +29,8 @@
 {% apply spaceless %}
 <dl{{ attributes
   .addClass([
-    'rw-entity-meta',
-    core ? 'rw-entity-meta--core',
+    class_prefix ~ '-entity-meta',
+    core ? class_prefix ~ '-entity-meta--core',
   ])
 }}>
   {% set meta = meta|filter(data => data.value is not empty) %}
@@ -43,16 +44,16 @@
 
     {# Label. #}
     <dt{{ label_attributes.addClass([
-      'rw-entity-meta__tag-label',
-      'rw-entity-meta__tag-label--' ~ name,
+      class_prefix ~ '-entity-meta__tag-label',
+      class_prefix ~ '-entity-meta__tag-label--' ~ name,
     ]) }}>{{ label }}</dt>
 
     {# Value. #}
     <dd{{ value_attributes.addClass([
-      'rw-entity-meta__tag-value',
-      'rw-entity-meta__tag-value--' ~ name,
-      'rw-entity-meta__tag-value--' ~ data.type,
-      name == last ? 'rw-entity-meta__tag-value--last',
+      class_prefix ~ '-entity-meta__tag-value',
+      class_prefix ~ '-entity-meta__tag-value--' ~ name,
+      class_prefix ~ '-entity-meta__tag-value--' ~ data.type,
+      name == last ? class_prefix ~ '-entity-meta__tag-value--last',
     ]) }}>
       {# Simple value. #}
       {% if data.type == 'simple' %}
@@ -88,24 +89,24 @@
 
       {# List of tags. #}
       {% elseif data.type == 'taglist' %}
-        <ul class="rw-entity-meta__tag-value__list">
-          {% for index, item in data.value|taglist(data.count, data.sort) %}
+        <ul class="{{ class_prefix }}-entity-meta__tag-value__list">
+          {% for index, item in data.value|ocha_reliefweb_taglist(data.count, data.sort) %}
             <li{{ create_attribute().addClass([
-              'rw-entity-meta__tag-value__list__item',
-              index == 'last' ? 'rw-entity-meta__tag-value__list__item--last',
+              class_prefix ~ '-entity-meta__tag-value__list__item',
+              index == 'last' ? class_prefix ~ '-entity-meta__tag-value__list__item--last',
             ]) }}>
               {% if item.url is empty %}
-                <span class="rw-entity-meta__tag-link">{{ attribute(item, data.display ?? 'name') ?? item.name }}</span>
+                <span class="{{ class_prefix }}-entity-meta__tag-link">{{ attribute(item, data.display ?? 'name') ?? item.name }}</span>
               {% else %}
-                <a class="rw-entity-meta__tag-link" href="{{ item.url }}">{{ attribute(item, data.display ?? 'name') ?? item.name }}</a>
+                <a class="{{ class_prefix }}-entity-meta__tag-link" href="{{ item.url }}">{{ attribute(item, data.display ?? 'name') ?? item.name }}</a>
               {% endif %}
             </li>
           {% endfor %}
           {% if data.count and data.value|length > data.count %}
             <li{{ create_attribute().addClass([
-              'rw-entity-meta__tag-value__list__item',
-              'rw-entity-meta__tag-value__list__item--more',
-              'rw-entity-meta__tag-value__list__item--last',
+              class_prefix ~ '-entity-meta__tag-value__list__item',
+              class_prefix ~ '-entity-meta__tag-value__list__item--more',
+              class_prefix ~ '-entity-meta__tag-value__list__item--last',
             ]) }}>{{ '@count more'|t({'@count': (data.value|length) - data.count}) }}</li>
           {% endif %}
         </ul>

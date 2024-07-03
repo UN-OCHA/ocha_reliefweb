@@ -1,4 +1,4 @@
-rw-document:
+ocha-reliefweb-document:
   css:
     component:
-      components/rw-document/rw-document.css: {}
+      components/ocha-reliefweb-document/ocha-reliefweb-document.css: {}

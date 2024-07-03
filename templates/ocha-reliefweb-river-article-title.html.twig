@@ -5,6 +5,7 @@
  * Template file for the title of a river article.
  *
  * Available variables:
+ * - class_prefix: class prefix
  * - level: the heading level (defaults to 3)
  * - attributes: attributes for the heading
  * - langcode: the language of the title (defaults to 'en')
@@ -16,13 +17,13 @@
 #}
 <h{{ level }}{{ attributes
   .addClass([
-    'rw-river-article__title',
-    prefix ? 'rw-river-article__title--with-prefix',
+    class_prefix ~ '-river-article__title',
+    prefix ? class_prefix ~ '-river-article__title--with-prefix',
   ])
   .setAttribute('lang', langcode)
 }}>
   {%- if prefix is not empty -%}
-    <span class="rw-river-article__title__prefix">{{ prefix }}</span>
+    <span class="{{ class_prefix }}-river-article__title__prefix">{{ prefix }}</span>
   {%- endif -%}
   <a href="{{ url }}">{{ title }}</a>
 </h{{ level }}>

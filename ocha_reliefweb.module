@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Drupal\Component\Render\HtmlEscapedText;
+use Drupal\Core\Template\Attribute;
 use Drupal\file\FileInterface;
 use Drupal\ocha_reliefweb\Helpers\ClassHelper;
 use Drupal\ocha_reliefweb\Helpers\UuidHelper;
@@ -17,10 +18,14 @@ use Drupal\ocha_reliefweb\ReliefWebBundleEntityInterface;
  * Implements hook_theme().
  */
 function ocha_reliefweb_theme() {
+  $class_prefix = \Drupal::config('ocha_reliefweb.settings')->get('template_class_prefix') ?? 'ocha-reliefweb';
+
   $themes = [
     // Theme for a ReliefWeb document.
     'ocha_reliefweb_document' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Heading level.
         'level' => 1,
         // Wrapper attributes.
@@ -40,6 +45,8 @@ function ocha_reliefweb_theme() {
     // Theme for a list of attachments.
     'ocha_reliefweb_attachment_list' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Section heading level.
         'level' => 2,
         // Section attributes.
@@ -70,6 +77,8 @@ function ocha_reliefweb_theme() {
     // Theme for a list of articles.
     'ocha_reliefweb_river' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Heading level for the river section.
         'level' => 2,
         // The id of the river section.
@@ -103,6 +112,8 @@ function ocha_reliefweb_theme() {
     // Theme for a the number of results in a list of articles.
     'ocha_reliefweb_river_results' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Section attributes.
         'attributes' => NULL,
         // The total number of resources matching the search query.
@@ -116,6 +127,8 @@ function ocha_reliefweb_theme() {
     // Theme for an article in a list of articles.
     'ocha_reliefweb_river_article' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Heading level for the river article.
         'level' => 3,
         // Article attributes.
@@ -130,6 +143,8 @@ function ocha_reliefweb_theme() {
     // Theme for the title of an article in a list of articles.
     'ocha_reliefweb_river_article_title' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Heading level for the river article title.
         'level' => 3,
         // Article title attributes.
@@ -147,6 +162,8 @@ function ocha_reliefweb_theme() {
     // Theme for the country slug of an article.
     'ocha_reliefweb_entity_country_slug' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Wrapper attributes.
         'attributes' => NULL,
         // List of countries with the a url to either the country page or the
@@ -156,6 +173,8 @@ function ocha_reliefweb_theme() {
     ],
     'ocha_reliefweb_entity_image' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Wrapper attributes.
         'attributes' => NULL,
         // Image information with urls (different sizes), width, height, alt
@@ -170,6 +189,8 @@ function ocha_reliefweb_theme() {
     // Theme for an article's detailed information (ex: source, format).
     'ocha_reliefweb_entity_meta' => [
       'variables' => [
+        // Class prefix.
+        'class_prefix' => $class_prefix,
         // Wrapper attributes.
         'attributes' => NULL,
         // Flag indicating the list of meta is the "core" meta information,
@@ -240,8 +261,8 @@ function ocha_reliefweb_file_presave(FileInterface $file) {
   }
 
   // Only process files attached to ReliefWeb submissions.
-  // @todo retrieve that from the configuration.
-  if (strpos($uri, 'public://reliefweb-submissions/') !== 0) {
+  $base_uri = \Drupal::config('ocha_reliefweb.settings')->get('reliefweb_api_submission_file_base_uri');
+  if (empty($base_uri) || strpos($uri, rtrim($base_uri, '/') . '/') !== 0) {
     return;
   }
 
@@ -312,6 +333,9 @@ function ocha_reliefweb_file_presave(FileInterface $file) {
 
 /**
  * Implements hook_preprocess_page_title().
+ *
+ * Hide the page title block on ReliefWeb resource pages since the title
+ * is added in the `ocha-reliefweb-document.html.twig` template.
  */
 function ocha_reliefweb_preprocess_page_title(array &$variables) {
   $route_match = \Drupal::routeMatch();
@@ -319,7 +343,24 @@ function ocha_reliefweb_preprocess_page_title(array &$variables) {
   if ($route_name === 'entity.reliefweb_resource.canonical') {
     $entity = $route_match->getParameter('reliefweb_resource');
     if ($entity->bundle->entity->isPageTitleDisabled()) {
-      $variables['title'] = new HtmlEscapedText('');
+      $variables['title'] = NULL;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess().
+ *
+ * Ensure the attributes and *_attributes are set for the unocha templates.
+ */
+function ocha_reliefweb_preprocess(array &$variables, $hook) {
+  if (strpos($hook, 'ocha_reliefweb_') === 0) {
+    foreach ($variables as $key => $value) {
+      if ($key === 'attributes' || strpos($key, '_attributes') !== FALSE) {
+        if (is_null($value)) {
+          $variables[$key] = new Attribute();
+        }
+      }
     }
   }
 }

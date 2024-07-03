@@ -13,3 +13,7 @@ services:
     tags:
       - { name: paramconverter }
     arguments: ['@entity_type.manager']
+  ocha_reliefweb.twig.extension:
+    class: Drupal\ocha_reliefweb\TwigExtension
+    tags:
+      - { name: twig.extension }

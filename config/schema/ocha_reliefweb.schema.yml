@@ -1,10 +1,10 @@
 ocha_reliefweb.settings:
   type: config_object
-  label: 'UNOCHA ReliefWeb integration settings'
+  label: 'UNOCHA ReliefWeb integration settings.'
   mapping:
     reliefweb_api_url:
       type: string
-      label: 'ReliefWeb API URL'
+      label: 'ReliefWeb API URL.'
     reliefweb_api_appname:
       type: string
       label: 'App name parameter to indentify the API requests.'
@@ -38,7 +38,9 @@ ocha_reliefweb.settings:
     reliefweb_api_submission_base_url:
       type: string
       label: 'Base url for the POST API submissions.'
-
+    template_class_prefix:
+      type: string
+      label: 'Class prefix for the templates.'
 
 ocha_reliefweb.reliefweb_resource_type.*:
   type: config_entity

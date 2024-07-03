@@ -5,6 +5,7 @@
  * Template for a list of files.
  *
  * Available variables:
+ * - class_prefix: class prefix
  * - attributes: section attributes
  * - title: section title
  * - title_attributes: attributes for the title
@@ -17,8 +18,8 @@
 
 #}
 {% if list is not empty %}
-<section{{ attributes.addClass('ocha-reliefweb-attachment-list', 'ocha-reliefweb-attachment-list--' ~ type) }}>
-  <h{{ level }}{{ title_attributes.addClass('ocha-reliefweb-attachment-list__title', type != 'interactive' ? 'visually-hidden') }}>{{ title }}</h{{ level }}>
+<section{{ attributes.addClass(class_prefix ~ '-attachment-list', class_prefix ~ '-attachment-list--' ~ type) }}>
+  <h{{ level }}{{ title_attributes.addClass(class_prefix ~ '-attachment-list__title', type != 'interactive' ? 'visually-hidden') }}>{{ title }}</h{{ level }}>
   <ul{{ list_attributes }}>
     {% for item in list %}
     {# Load the first preview as eager unless specified otherwise, for better UX. #}
@@ -40,10 +41,10 @@
 
         {{ item.preview }}
         {% if item.label %}
-        <strong class="ocha-reliefweb-attachment-list__label">{{ item.label }}</strong>
+        <strong class="{{ class_prefix }}-attachment-list__label">{{ item.label }}</strong>
         {% endif %}
         {% if item.description %}
-        <span class="ocha-reliefweb-attachment-list__description">{{ item.description }}</span>
+        <span class="{{ class_prefix }}-attachment-list__description">{{ item.description }}</span>
         {% endif %}
 
       {% if item.url %}
@@ -54,7 +55,7 @@
   </ul>
 
   {% if footer %}
-  <footer{{ footer_attributes.addClass('ocha-reliefweb-attachment-list__footer') }}>
+  <footer{{ footer_attributes.addClass(class_prefix ~ '-attachment-list__footer') }}>
     {{ footer }}
   </footer>
   {% endif %}

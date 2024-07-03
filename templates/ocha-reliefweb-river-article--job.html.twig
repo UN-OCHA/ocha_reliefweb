@@ -4,7 +4,8 @@
  * @file
  * Template file for a job entity article in a river.
  *
- * Available variables;
+ * Available variables:
+ * - class_prefix: class prefix
  * - level: heading level (defaults to 3)
  * - attributes: article attributes
  * - entity: the article entity's data as an associative array with notably:
@@ -21,13 +22,13 @@
 #}
 <article{{ attributes
   .addClass([
-    'rw-river-article',
-    'rw-river-article--' ~ entity.bundle,
+    class_prefix ~ '-river-article',
+    class_prefix ~ '-river-article--' ~ entity.bundle,
   ])
   .setAttribute('data-id', entity.id)
 }}>
   {# Header with country slug and title. #}
-  <header class="rw-river-article__header">
+  <header class="{{ class_prefix }}-river-article__header">
     {# Country slug. #}
     {{ render_var({
       '#theme': 'ocha_reliefweb_entity_country_slug',
@@ -45,7 +46,7 @@
   </header>
 
   {# Footer with meta information (sources, dates etc.). #}
-  <footer class="rw-river-article__footer">
+  <footer class="{{ class_prefix }}-river-article__footer">
     {{ render_var({
       '#theme': 'ocha_reliefweb_entity_meta',
       '#attributes': meta_attributes,

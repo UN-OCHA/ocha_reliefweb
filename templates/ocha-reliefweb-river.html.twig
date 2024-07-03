@@ -4,7 +4,8 @@
  * @file
  * Template file for a river (list of articles) section.
  *
- * Available variables;
+ * Available variables:
+ * - class_prefix: class prefix
  * - level: heading level (defaults to 2)
  * - id: section id (HTML safe)
  * - resource: the API resource type of the river's content
@@ -29,15 +30,15 @@
 <section {{ attributes
   .setAttribute('id', id)
   .addClass([
-    'rw-river',
-    'rw-river--' ~ id,
-    resource ? 'rw-river--type-' ~ resource|clean_class
+    class_prefix ~ '-river',
+    class_prefix ~ '-river--' ~ id,
+    resource ? class_prefix ~ '-river--type-' ~ resource|clean_class
   ])
 }}>
 
   {% if title is not empty %}
     <h{{ level }}{{ title_attributes.addClass([
-      'rw-river__title',
+      class_prefix ~ '-river__title',
     ]) }}>{{ title }}</h{{ level }}>
   {% endif %}
 
@@ -47,7 +48,7 @@
     }) }}
 
     <div{{ river_attributes.addClass([
-      'rw-river__articles',
+      class_prefix ~ '-river__articles',
       ]) }}>
       {% for entity in entities %}
         {{ render_var({
@@ -59,11 +60,11 @@
       {% endfor %}
     </div>
   {% else %}
-    <p class="rw-river__empty">{{ empty }}</p>
+    <p class="{{ class_prefix }}-river__empty">{{ empty }}</p>
   {% endif %}
 
   {% if more is not empty and more.url %}
-    <footer class="rw-river__view-more view-more">
+    <footer class="{{ class_prefix }}-river__view-more view-more">
       <a href="{{ more.url }}">{{ more.label ?? ('View more'|t) }}</a>
     </footer>
   {% endif %}
