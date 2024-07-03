@@ -42,12 +42,15 @@ ocha_reliefweb.settings:
 
 ocha_reliefweb.reliefweb_resource_type.*:
   type: config_entity
-  label: 'ReliefWeb Resource type'
+  label: 'ReliefWeb Resource type.'
   mapping:
     settings:
       type: mapping
-      lable: 'Resource type settings'
+      label: 'Resource type settings.'
       mapping:
         disable_page_title:
           type: boolean
-          label: 'Disable page title'
+          label: 'Disable page title.'
+        preview_warning:
+          type: text_format
+          label: 'Warning message when viewing the preview of an unpublished submission.'

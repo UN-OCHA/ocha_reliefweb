@@ -31,6 +31,15 @@ class ReliefWebResourceTypeForm extends BundleEntityFormBase {
       '#default_value' => $this->getEntity()->isPageTitleDisabled(),
     ];
 
+    $form['settings']['preview_warning'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Preview warning'),
+      '#description' => $this->t('Warning message when viewing the preview of an unpublished submission.'),
+      '#default_value' => $this->getEntity()->getPreviewWarning(),
+      '#format' => 'ocha_reliefweb_editor',
+      '#allowed_formats' => ['ocha_reliefweb_editor'],
+    ];
+
     return $this->protectBundleIdElement($form);
   }
 

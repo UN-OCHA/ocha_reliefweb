@@ -2,6 +2,7 @@
 
 namespace Drupal\ocha_reliefweb\Entity;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
 
 /**
@@ -45,6 +46,7 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "label",
  *     "description",
  *     "status",
+ *     "settings",
  *   },
  *   links = {
  *     "edit-form" = "/admin/structure/reliefweb_resource_type/{reliefweb_resource_type}/edit",
@@ -110,8 +112,33 @@ class ReliefWebResourceType extends ConfigEntityBundleBase implements ReliefWebR
   /**
    * {@inheritdoc}
    */
+  public function getSettings(): array {
+    return $this->settings;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSetting(string $key, mixed $default = NULL): mixed {
+    return $this->settings[$key] ?? $default;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isPageTitleDisabled(): bool {
-    return $this->settings['disable_page_title'] ?? TRUE;
+    return $this->getSetting('disable_page_title', TRUE);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPreviewWarning(): MarkupInterface|string {
+    $warning = $this->getSetting('preview_warning', []);
+    if (empty($warning['value'])) {
+      return '';
+    }
+    return check_markup($warning['value'], $warning['format'] ?? 'ocha_reliefweb_editor');
   }
 
 }

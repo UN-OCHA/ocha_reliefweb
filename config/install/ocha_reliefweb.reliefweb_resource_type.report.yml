@@ -8,3 +8,8 @@ dependencies:
     module:
       - ocha_reliefweb
 third_party_settings: {  }
+settings:
+  disable_page_title: true
+  preview_warning:
+    value: '<p>This is a <strong>preview</strong>. The document is not yet published.</p><p>The URLs (document, files and images) are not publicly accessible so do not share them.</p>'
+    format: ocha_reliefweb_editor

@@ -34,6 +34,13 @@ class ReliefWebResourceContentReportFormatter extends ReliefWebResourceContentDe
     $elements = [];
 
     foreach ($items as $delta => $item) {
+      $entity = $item->getEntity();
+      if ($entity->getStatus() !== 'published') {
+        $message = $entity->bundle->entity->getPreviewWarning();
+        if (!empty($message)) {
+          $this->messenger()->addWarning($message);
+        }
+      }
       $data = $this->parseResourceApiData($item->getEntity());
       $elements[$delta] = $this->renderContent($data);
     }
