@@ -1,6 +1,6 @@
 {
     "name": "unocha/ocha_reliefweb",
-    "description": "OCHA ReliefWeb module",
+    "description": "OCHA ReliefWeb integration module",
     "type": "drupal-module",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -9,8 +9,19 @@
             "role": ""
         }
     ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
     "require": {
         "php": ">=8.2",
+        "cweagans/composer-patches": "^1.7",
         "drupal/core": "^10",
         "opis/json-schema": "^2.2",
         "drupal/select_a11y": "^3.0.x-dev@dev'",
@@ -24,7 +35,16 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
+            "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "extra": {
+        "enable-patching": true,
+        "composer-exit-on-patch-failure": true,
+        "patches-file": "composer.patches.json",
+        "patchLevel": {
+            "drupal/core": "-p2"
         }
     },
     "scripts": {

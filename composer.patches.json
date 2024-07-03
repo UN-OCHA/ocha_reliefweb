@@ -1,0 +1,7 @@
+{
+  "patches": {
+    "opis/json-schema": {
+      "Allow returning multiple validation errors": "PATCHES/opis-json-schema-return-multiple-validation-errors_107.patch"
+    }
+  }
+}
