@@ -460,16 +460,18 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
   public function getResourceUrl(): string {
     // Use the stored URL if defined otherwise generated one.
     if (empty($this->resourceUrl)) {
-      // Generate a unique URL for the submission. It doesn't need to be an
-      // existing URL but it must be unique. We use a UUID V4 (random)for that.
-      //
-      // @todo retrieve that from the bundle entity so that we can have a
-      // different base URL per bundle.
-      $base_url = $this->getConfig()?->get('reliefweb_api_submission_base_url');
+      $base_url = $this->getConfig()->get('reliefweb_api_submission_base_url');
       if (!isset($base_url)) {
         throw new \Exception('Missing submission base URL');
       }
-      $this->resourceUrl = rtrim($base_url, '/') . '/' . $this->uuid();
+      // If the URL doesn't have a scheme, we assume it's a relative path to
+      // the current site.
+      if (preg_match('#^https?://#', $base_url) !== 1) {
+        $base_url = 'internal:/' . ltrim($base_url, '/');
+      }
+      $this->resourceUrl = Url::fromUri(rtrim($base_url, '/') . '/' . $this->uuid(), [
+        'absolute' => TRUE,
+      ])->toString();
     }
     return $this->resourceUrl;
   }
@@ -535,15 +537,29 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
 
     // Send the content to the ReliefWeb POST API.
     if ($this->getSubmitContent()) {
-      $this->submitContent();
+      // By default, if the document is flagged for submission we consider
+      // that it will be queued for processing.
+      $this->set('status', 'queued');
+      $this->set('message', 'Document queued for processing.');
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function afterSave(): void {
+    // Send the content to the ReliefWeb POST API.
+    $this->submitContent();
   }
 
   /**
    * Submit the content to the ReliefWeb POST API.
    */
   protected function submitContent(): void {
-    if ($this->hasSubmittedContent()) {
+    if ($this->getSubmitContent() && $this->hasSubmittedContent()) {
+      // Remove the submission flag.
+      $this->setSubmitContent(FALSE);
+
       $config = $this->getConfig();
       $payload = $this->getSubmittedContent();
 
@@ -557,16 +573,15 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
       $resource = $this->getApiResource() . '/' . $this->getResourceUuid();
 
       // Submit the content.
-      // @todo maybe have submitContent return more than the message so for
-      // example we can mark a submissions as refused etc.
       try {
-        $message = $this->getReliefWebApiClient()->submitContent($resource, $payload, $headers);
-        $this->set('status', 'queued');
-        $this->set('message', $message);
+        // The status of the document will be updated via the webhook if the
+        // submission is successful.
+        $this->getReliefWebApiClient()->submitContent($resource, $payload, $headers);
       }
       catch (\Exception $exception) {
-        $this->set('status', 'error');
+        $this->set('status', $exception->getCode() === 406 ? 'refused' : 'error');
         $this->set('message', $exception->getMessage());
+        $this->save();
       }
     }
   }
@@ -593,6 +608,9 @@ abstract class ReliefWebResource extends ContentEntityBase implements ReliefWebR
     // Ensure we do not store the API data in the cache so that we don't end up
     // we stale data.
     $this->apiData = NULL;
+
+    // Prevent submitting the content inadvertently.
+    $this->submitContent = FALSE;
 
     return parent::__sleep();
   }

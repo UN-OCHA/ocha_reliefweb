@@ -34,13 +34,19 @@ class ReliefWebPostApiWebhookController extends ControllerBase {
     // Retrieve the current status of the document.
     $status = $resource->getStatus();
 
+    // The language to use for the message. Since it's for administration, we
+    // store it in English but using `$this->t()` below, Drupal should be able
+    // to add some texts as translatable strings and normally display the
+    // messages translated in the UI.
+    $options = ['langcode' => 'en'];
+
     if (!empty($data)) {
       $status = 'published';
-      $message = $this->t('Document publicly available.');
+      $message = $this->t('Document publicly available.', options: $options);
     }
     // We only change the status of resources that are not marked as error.
     // @todo explain why...
-    elseif ($status !== 'error') {
+    elseif ($status !== 'error' && $status !== 'refused') {
       // @todo we may need to distinguish between the different unpublished
       // states: on-hold, refused and embargoed.
       //
@@ -68,17 +74,17 @@ class ReliefWebPostApiWebhookController extends ControllerBase {
       // @todo move that to the `ReliefWebResource::preSave()` so there is
       // only one place where the message is set.
       if ($status === 'pending') {
-        $message = $this->t('Document pending review by editorial team.');
+        $message = $this->t('Document pending review by editorial team.', options: $options);
       }
       else {
         $embargoed = DateHelper::getDateObject($resource->embargoed?->value);
         if (!empty($embargoed) && $embargoed < new \DateTime()) {
           $message = $this->t('Document embargoed until @date.', [
             '@date' => $embargoed->format('c'),
-          ]);
+          ], options: $options);
         }
         else {
-          $message = $this->t('Document not publicly available.');
+          $message = $this->t('Document not publicly available.', options: $options);
         }
       }
     }

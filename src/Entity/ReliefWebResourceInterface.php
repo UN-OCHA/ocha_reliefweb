@@ -123,4 +123,9 @@ interface ReliefWebResourceInterface extends ContentEntityInterface, EntityChang
    */
   public function setSubmitContent(bool $submit = TRUE): static;
 
+  /**
+   * Perform additional tasks after the content has been saving.
+   */
+  public function afterSave(): void;
+
 }

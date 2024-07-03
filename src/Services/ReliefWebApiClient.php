@@ -368,8 +368,8 @@ class ReliefWebApiClient {
    * @param int $timeout
    *   Request timeout.
    *
-   * @return mixed
-   *   The response's data.
+   * @return array
+   *   An associative array with the response status code and data.
    *
    * @throws \Exception
    *   An exception if the request was not successful.
@@ -381,7 +381,7 @@ class ReliefWebApiClient {
     array $payload,
     array $headers,
     int $timeout = 5,
-  ): mixed {
+  ): array {
     $api_url = $this->getApiUrl();
     $appname = $this->getAppName();
 
@@ -426,8 +426,10 @@ class ReliefWebApiClient {
       throw new \Exception('Exception while submitting content.');
     }
 
+    $code = $response->getStatusCode();
+
     // Retrieve the raw response's data.
-    if ($response->getStatusCode() === 200) {
+    if ($code === 200 || $code === 202) {
       $data = (string) $response->getBody();
     }
     else {
@@ -435,18 +437,19 @@ class ReliefWebApiClient {
 
       $this->getLogger()->error('Error while submitting content for @url (code @code): @error.', [
         '@url' => $url,
-        '@code' => $response->getStatusCode(),
+        '@code' => $code,
         '@error' => $error,
       ]);
+
       throw new \Exception(strtr('@code @error.', [
-        '@code' => $response->getStatusCode(),
+        '@code' => $code,
         '@error' => $error,
-      ]));
+      ]), $code);
     }
 
     // Decode the data, skip if invalid.
     try {
-      $decoded = json_decode($data, TRUE, 512, \JSON_THROW_ON_ERROR);
+      $data = json_decode($data, TRUE, 512, \JSON_THROW_ON_ERROR);
     }
     catch (\Exception $exception) {
       $this->getLogger()->error('Unable to decode POST API JSON schema for request @url.', [
@@ -455,7 +458,10 @@ class ReliefWebApiClient {
       throw new \Exception('Invalid response data.');
     }
 
-    return $decoded;
+    return [
+      'code' => $code,
+      'data' => $data,
+    ];
   }
 
   /**
