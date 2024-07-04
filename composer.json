@@ -11,6 +11,19 @@
     ],
     "repositories": [
         {
+            "type": "package",
+            "package": {
+                "name": "unocha/json-schema",
+                "version": "v2.3.1",
+                "type": "drupal-module",
+                "source": {
+                    "url": "https://github.com/UN-OCHA/json-schema.git",
+                    "type": "git",
+                    "reference": "unocha"
+                }
+            }
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
@@ -21,9 +34,8 @@
     ],
     "require": {
         "php": ">=8.2",
-        "cweagans/composer-patches": "^1.7",
         "drupal/core": "^10",
-        "opis/json-schema": "^2.2",
+        "unocha/json-schema": "^2.3.1",
         "drupal/select_a11y": "^3.0.x-dev@dev",
         "symfony/uid": "^6.3"
     },
@@ -35,16 +47,7 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "cweagans/composer-patches": true,
             "dealerdirect/phpcodesniffer-composer-installer": true
-        }
-    },
-    "extra": {
-        "enable-patching": true,
-        "composer-exit-on-patch-failure": true,
-        "patches-file": "composer.patches.json",
-        "patchLevel": {
-            "drupal/core": "-p2"
         }
     },
     "scripts": {
