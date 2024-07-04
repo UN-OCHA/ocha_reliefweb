@@ -7,7 +7,6 @@
 
 declare(strict_types=1);
 
-use Drupal\Component\Render\HtmlEscapedText;
 use Drupal\Core\Template\Attribute;
 use Drupal\file\FileInterface;
 use Drupal\ocha_reliefweb\Helpers\ClassHelper;
