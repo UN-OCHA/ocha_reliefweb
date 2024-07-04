@@ -24,7 +24,7 @@
         "cweagans/composer-patches": "^1.7",
         "drupal/core": "^10",
         "opis/json-schema": "^2.2",
-        "drupal/select_a11y": "^3.0.x-dev@dev'",
+        "drupal/select_a11y": "^3.0.x-dev@dev",
         "symfony/uid": "^6.3"
     },
     "require-dev": {
