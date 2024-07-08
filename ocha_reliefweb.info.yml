@@ -9,5 +9,4 @@ dependencies:
   - durpal:filter
   - drupal:file
   - drupal:user
-  - select_a11y:select_a11y
 
