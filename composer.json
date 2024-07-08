@@ -23,7 +23,7 @@
         "php": ">=8.2",
         "drupal/core": "^10",
         "unocha/json-schema": "^2.3.2",
-        "drupal/select_a11y": "^3.0.x-dev@dev",
+        "reliefweb/simple-autocomplete": "^v1.3",
         "symfony/uid": "^6.3"
     },
     "require-dev": {

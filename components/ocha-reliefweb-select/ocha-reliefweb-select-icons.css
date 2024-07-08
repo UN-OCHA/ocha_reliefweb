@@ -1,0 +1,7 @@
+:root {
+  --ocha-reliefweb-select-icons-sprite: url("/modules/contrib/ocha_reliefweb/components/ocha-reliefweb-select/ocha-reliefweb-select-icons.svg?v=1.0.0");
+  --ocha-reliefweb-select-icons--common--close--12--black: var(--ocha-reliefweb-select-icons-sprite) -18px 0 no-repeat;
+  --ocha-reliefweb-select-icons--common--close--12--white: var(--ocha-reliefweb-select-icons-sprite) -30px 0 no-repeat;
+  --ocha-reliefweb-select-icons--toggle--down--18--black: var(--ocha-reliefweb-select-icons-sprite) 0 -18px no-repeat;
+  --ocha-reliefweb-select-icons--toggle--up--18--black: var(--ocha-reliefweb-select-icons-sprite) 0 0 no-repeat;
+}

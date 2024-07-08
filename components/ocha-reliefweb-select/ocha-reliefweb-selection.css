@@ -1,0 +1,78 @@
+/**
+ * Filter/value selection.
+ *
+ * Styling for selected filters/values in the edit forms, admin backends and the
+ * advanced search in the river pages, notably when used with an autocomplete
+ * widget.
+ *
+ * Structure:
+ *
+ * <div class="ocha-reliefweb-selection">
+ *   <div data-value="value1">My first selection <button>Remove</button></div>
+ *   <div data-value="value2">My second selection <button>Remove</button></div>
+ * </div>
+ *
+ * @todo It may possibly make more sense to use a <ol> for the list of selected
+ * filters. That would require a modification to the JS scripts.
+ */
+.ocha-reliefweb-selection {
+  width: auto;
+  min-width: 100%;
+  /* This is compensate the margin of the descendants. */
+  margin: 4px -4px;
+  padding: 0;
+  border: none;
+}
+.ocha-reliefweb-selection [data-value] {
+  position: relative;
+  display: inline-block;
+  margin: 4px;
+  /* The padding right is for the remove button. */
+  padding: 3px 36px 3px 8px;
+  background: var(--color-gray-050);
+  font-size: 15px;
+  /* Better readability. */
+  line-height: 24px;
+}
+.ocha-reliefweb-selection [data-value] .label {
+  display: inline;
+  margin-left: 0.25rem;
+  color: var(--input--hover-border-color);
+}
+.ocha-reliefweb-selection [data-value] button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  /* This, combined with the overflow hides the text visually. */
+  padding: 0 0 0 30px;
+  cursor: pointer;
+  color: var(--input--hover-border-color);
+  border: none;
+  background: var(--color-gray-050);
+}
+.ocha-reliefweb-selection [data-value] button:hover,
+.ocha-reliefweb-selection [data-value] button:focus,
+.ocha-reliefweb-selection [data-value] button:active {
+  background: var(--input--hover-border-color);
+}
+.ocha-reliefweb-selection [data-value] button:before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  margin-left: -6px;
+  content: "";
+  background: var(--ocha-reliefweb-select-icons--common--close--12--black);
+}
+.ocha-reliefweb-selection [data-value] button:hover:before,
+.ocha-reliefweb-selection [data-value] button:focus:before,
+.ocha-reliefweb-selection [data-value] button:active:before {
+ background: var(--ocha-reliefweb-select-icons--common--close--12--white);
+}

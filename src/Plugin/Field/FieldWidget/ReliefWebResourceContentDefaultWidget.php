@@ -250,13 +250,16 @@ class ReliefWebResourceContentDefaultWidget extends WidgetBase implements Relief
     // Sort by alpha ascending.
     LocalizationHelper::collatedAsort($options);
 
+    // @todo when there are less than 10 options, maybe show checkboxes or
+    // radios.
     return [
-      '#type' => 'select',
+      '#type' => 'ocha_reliefweb_select',
       '#title' => $label,
       '#description' => $description,
       '#options' => $options,
       '#default_value' => $default_value,
       '#empty_option' => $this->t('- Select a value -'),
+      '#empty_value' => '_none',
     ] + $properties;
   }
 

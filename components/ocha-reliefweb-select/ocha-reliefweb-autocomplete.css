@@ -1,0 +1,104 @@
+/**
+ * Autocomplete widget.
+ *
+ * Style for the autocomplete widgets. The widgets consist of an element
+ * (often a <div>) with the `ocha-reliefweb-autocomplete` class wrapping an
+ * <input> element.
+ *
+ * Structure:
+ *
+ * <div class="ocha-reliefweb-autocomplete">
+ *   <input type="search" class="ocha-reliefweb-autocomplete-input">
+ *   <button class="ocha-reliefweb-autocomplete-show-all">Show all</button>
+ *   <ul class="ocha-reliefweb-autocomplete-selector">
+ *     <li class="ocha-reliefweb-autocomplete-suggestion"><span>Highlighted</span> part of the suggestion.</li>
+ *     ...
+ *   </ul>
+ * </div>
+ */
+/* This selector is to have enough specificity. */
+.ocha-reliefweb-autocomplete-select.ocha-reliefweb-autocomplete-select--processed {
+  display: none;
+}
+.ocha-reliefweb-autocomplete {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+.ocha-reliefweb-autocomplete--with-show-all {
+  /* The padding is for the button to show all options. */
+  padding-right: 60px;
+}
+.ocha-reliefweb-autocomplete--with-show-all .ocha-reliefweb-autocomplete-input {
+  display: block;
+  width: 100%;
+}
+.ocha-reliefweb-autocomplete-show-all {
+  position: absolute;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+  width: 60px;
+  height: 100%;
+  /* The following rules are to hide visually the text as an icon is used. */
+  white-space: nowrap;
+  text-indent: 60px;
+}
+.ocha-reliefweb-autocomplete-show-all.button {
+  margin: 0;
+}
+/* Icon to show the collapsed/expanded state of the show all button. */
+.ocha-reliefweb-autocomplete-show-all:before {
+  position: absolute;
+  /* The positions combined with the margins center the icon horizontally and
+   * vertically. */
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  margin-left: -9px;
+  content: "";
+  background: var(--ocha-reliefweb-select-icons--toggle--down--18--black);
+}
+.ocha-reliefweb-autocomplete[aria-expanded="true"] .ocha-reliefweb-autocomplete-show-all:before {
+  background: var(--ocha-reliefweb-select-icons--toggle--up--18--black);
+}
+/* List of autocomplete suggestions. */
+.ocha-reliefweb-autocomplete-selector {
+  position: absolute;
+  /* Ensures the popup is above the content. */
+  z-index: 120;
+  top: 100%;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+  /* The height is determined to display at least five suggestions. */
+  max-height: 208px;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid var(--input--hover-border-color);
+  background: white;
+  box-shadow: 0 1px 4px 1px rgba(0, 0 ,0 , 0.3);
+}
+.ocha-reliefweb-autocomplete-suggestion {
+  margin: 0;
+  padding: 8px;
+  /* Suggestions are clickable. */
+  cursor: pointer;
+  white-space: pre-wrap;
+  font-size: 16px;
+  /* Better readability. */
+  line-height: 1.5;
+}
+/* Currently selected suggestion. */
+.ocha-reliefweb-autocomplete-suggestion[aria-selected] {
+  background: var(--color-gray-050);
+}
+/* Highlight the parts of the suggestions that match the query. */
+.ocha-reliefweb-autocomplete-suggestion span {
+  font-weight: bold;
+}

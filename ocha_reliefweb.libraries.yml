@@ -2,3 +2,13 @@ ocha-reliefweb-document:
   css:
     component:
       components/ocha-reliefweb-document/ocha-reliefweb-document.css: {}
+
+ocha-reliefweb-select:
+  css:
+    component:
+      components/ocha-reliefweb-select/ocha-reliefweb-select-icons.css: {}
+      components/ocha-reliefweb-select/ocha-reliefweb-autocomplete.css: {}
+      components/ocha-reliefweb-select/ocha-reliefweb-selection.css: {}
+  js:
+    /libraries/simple-autocomplete/simpleautocomplete.js: {}
+    components/ocha-reliefweb-select/ocha-reliefweb-select.js: {}
