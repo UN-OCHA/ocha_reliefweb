@@ -139,7 +139,7 @@ class ReliefWebResourceContentReportWidget extends ReliefWebResourceContentDefau
     // type field populated with the types of the selected disasters?
     $element['value']['disaster_type'] = $this->createTermSelector(
       resource: 'references/disaster-types',
-      label: $this->t('Disaster'),
+      label: $this->t('Disaster type'),
       description: $this->t('Disaster type(s) focused on in the document.'),
       default_value: $defaults['disaster_type'] ?? NULL,
     );
